@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Notícias Square Cloud</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            padding: 20px;
+            margin: 0;
+            color: #333;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 700px;
+        }
+
+        h1, h2 {
+            color: #333;
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .form-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+            color: #555;
+        }
+
+        input[type="text"],
+        input[type="url"],
+        textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        button {
+            background-color: #5865F2;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 17px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+            margin-top: 15px;
+        }
+
+        button:hover {
+            background-color: #4752C4;
+        }
+
+        .preview-area {
+            margin-top: 40px;
+            border-top: 1px solid #eee;
+            padding-top: 30px;
+            text-align: center;
+        }
+
+        .full-news-image-container {
+            width: 500px;
+            height: 600px;
+            background-color: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            margin: 0 auto 20px auto;
+            box-sizing: border-box;
+            padding: 20px 0;
+        }
+
+        .header-black-area {
+            width: 100%;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .square-cloud-logo {
+            width: 80px;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .news-card {
+            position: relative;
+            width: 450px;
+            height: 450px;
+            border-radius: 20px;
+            overflow: hidden;
+            background-color: #ffffff;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+            flex-shrink: 0;
+        }
+
+        .image-background-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .content-overlay {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            background: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 90%, rgba(255, 255, 255, 0) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+
+        .content-overlay h3 {
+            font-size: 1.8em;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 700;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            line-height: 1.2;
+        }
+
+        .content-overlay p {
+            font-size: 1.1em;
+            line-height: 1.5;
+            color: #555;
+            margin-bottom: 25px;
+            flex-grow: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .content-overlay .source-text {
+            font-size: 0.85em;
+            color: #888;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: calc(100% - 40px);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .footer-black-area {
+            width: 100%;
+            height: 50px;
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            font-size: 0.9em;
+            padding: 0 20px;
+            box-sizing: border-box;
+            flex-shrink: 0;
+        }
+
+        .footer-black-area span {
+            white-space: nowrap;
+        }
+
+        #generatedImagePreview {
+            max-width: 100%;
+            height: auto;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            margin-top: 20px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .message {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Gerador de Notícias Square Cloud</h1>
+
+        <form id="newsForm">
+            <div class="form-group">
+                <label for="imageBgUrl">URL da Imagem de Fundo (Paisagem):</label>
+                <input type="url" id="imageBgUrl" value="https://picsum.photos/id/1018/800/600" required>
+            </div>
+
+            <div class="form-group">
+                <label for="newsTitle">Título:</label>
+                <input type="text" id="newsTitle" placeholder="Título da Notícia" required>
+            </div>
+
+            <div class="form-group">
+                <label for="newsDescription">Descrição:</label>
+                <textarea id="newsDescription" rows="5" placeholder="Corpo da notícia..." required></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="newsSource">Fonte:</label>
+                <input type="text" id="newsSource" placeholder="Ex: SeuSite.com" required>
+            </div>
+
+            <button type="submit" id="sendNewsButton">Gerar Imagem e Enviar para Discord</button>
+        </form>
+
+        <div class="preview-area">
+            <h2>Pré-visualização da Imagem Final</h2>
+            <div id="imageToGenerate" class="full-news-image-container">
+                <div class="header-black-area">
+                    <img src="./apple-touch-icon.png" alt="Square Cloud Logo" class="square-cloud-logo">
+                </div>
+
+                <div class="news-card">
+                    <div class="image-background-placeholder" style="background-image: url('https://picsum.photos/id/1018/800/600');">
+                    </div>
+                    <div class="content-overlay">
+                        <h3 id="previewNewsTitle">Título</h3>
+                        <p id="previewNewsDescription">Descrição ...</p>
+                        <span class="source-text">Fonte: <span id="previewNewsSource">https://exemplo.com</span></span>
+                    </div>
+                </div>
+
+                <div class="footer-black-area">
+                    <span id="previewDate"></span>
+                    <span id="previewSite">https://squarecloud.app</span>
+                </div>
+            </div>
+            <img id="generatedImagePreview" src="" alt="Pré-visualização da Notícia" style="display: none;">
+        </div>
+
+        <p id="message" class="message"></p>
+    </div>
+
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const newsForm = document.getElementById('newsForm');
+            const imageBgUrlInput = document.getElementById('imageBgUrl');
+            const newsTitleInput = document.getElementById('newsTitle');
+            const newsDescriptionInput = document.getElementById('newsDescription');
+            const newsSourceInput = document.getElementById('newsSource');
+
+            const imageToGenerate = document.getElementById('imageToGenerate');
+
+            const imageBackgroundPlaceholder = imageToGenerate.querySelector('.image-background-placeholder');
+            const previewNewsTitle = document.getElementById('previewNewsTitle');
+            const previewNewsDescription = document.getElementById('previewNewsDescription');
+            const previewNewsSource = document.getElementById('previewNewsSource');
+            const previewDate = document.getElementById('previewDate');
+            const previewSite = document.getElementById('previewSite');
+            const squareCloudLogo = document.querySelector('.square-cloud-logo');
+
+            const generatedImagePreview = document.getElementById('generatedImagePreview');
+            const messageDisplay = document.getElementById('message');
+            const sendNewsButton = document.getElementById('sendNewsButton');
+
+            let allImagesLoadedPromise = Promise.resolve();
+
+            function getFormattedDateUTCMinus3() {
+                const now = new Date();
+                // Pega o horário UTC e subtrai 3 horas
+                now.setUTCHours(now.getUTCHours() - 3);
+
+                const day = String(now.getUTCDate()).padStart(2, '0');
+                const month = String(now.getUTCMonth() + 1).padStart(2, '0');
+                const year = now.getUTCFullYear();
+                const hours = String(now.getUTCHours()).padStart(2, '0');
+                const minutes = String(now.getUTCMinutes()).padStart(2, '0');
+
+                return `${day}/${month}/${year} ${hours}:${minutes}`;
+            }
+
+            function updatePreviewElements() {
+                const bgUrl = imageBgUrlInput.value;
+                imageBackgroundPlaceholder.style.backgroundImage = `url('${bgUrl}')`;
+
+                previewNewsTitle.textContent = newsTitleInput.value;
+                previewNewsDescription.textContent = newsDescriptionInput.value;
+                previewNewsSource.textContent = newsSourceInput.value;
+
+                previewDate.textContent = `Data: ${getFormattedDateUTCMinus3()}`;
+                previewSite.textContent = `Site: https://squarecloud.app`;
+
+                generatedImagePreview.style.display = 'none';
+                messageDisplay.textContent = '';
+                messageDisplay.className = 'message';
+
+                const imagePromises = [];
+
+                if (bgUrl && !bgUrl.startsWith('data:')) {
+                    const bgImg = new Image();
+                    imagePromises.push(new Promise((resolve, reject) => {
+                        bgImg.onload = () => {
+                            imageBackgroundPlaceholder.style.backgroundColor = 'transparent';
+                            resolve();
+                        };
+                        bgImg.onerror = () => {
+                            console.error("Erro ao carregar imagem de fundo para pré-visualização:", bgUrl);
+                            imageBackgroundPlaceholder.style.backgroundImage = 'none';
+                            imageBackgroundPlaceholder.style.backgroundColor = '#f0f0f0';
+                            reject(new Error("Não foi possível carregar a imagem de fundo."));
+                        };
+                        bgImg.crossOrigin = 'anonymous'; // Essencial para CORS
+                        bgImg.src = bgUrl;
+                    }));
+                }
+
+                const logoSrc = squareCloudLogo.src;
+                if (logoSrc && !logoSrc.startsWith('data:') && logoSrc.startsWith('http')) {
+                    const logoImg = new Image();
+                    imagePromises.push(new Promise((resolve, reject) => {
+                        logoImg.onload = () => resolve();
+                        logoImg.onerror = () => {
+                            console.error("Erro ao carregar imagem do logo:", logoSrc);
+                            reject(new Error("Não foi possível carregar a imagem do logo."));
+                        };
+                        logoImg.crossOrigin = 'anonymous';
+                        logoImg.src = logoSrc;
+                    }));
+                } else if (logoSrc && !logoSrc.startsWith('data:') && !logoSrc.startsWith('http')) {
+                
+                }
+                
+                allImagesLoadedPromise = Promise.all(imagePromises.length > 0 ? imagePromises : [Promise.resolve()]);
+            }
+
+            imageBgUrlInput.addEventListener('input', updatePreviewElements);
+            newsTitleInput.addEventListener('input', updatePreviewElements);
+            newsDescriptionInput.addEventListener('input', updatePreviewElements);
+            newsSourceInput.addEventListener('input', updatePreviewElements);
+
+            imageBgUrlInput.value = 'https://picsum.photos/id/1018/800/600';
+            newsTitleInput.value = 'Título da Notícia';
+            newsDescriptionInput.value = 'Aqui vai a descrição detalhada da notícia. Pode ser um texto mais longo para demonstrar como o layout se ajusta e o que é o Square Cloud.';
+            newsSourceInput.value = 'SeuSite.com';
+            updatePreviewElements();
+
+            newsForm.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                messageDisplay.textContent = 'Gerando imagem e enviando para o Discord...';
+                messageDisplay.className = 'message';
+                generatedImagePreview.style.display = 'none';
+
+                if (!imageBgUrlInput.value || !newsTitleInput.value || !newsDescriptionInput.value || !newsSourceInput.value) {
+                    messageDisplay.textContent = 'Por favor, preencha todos os campos.';
+                    messageDisplay.className = 'message error';
+                    return;
+                }
+
+                let imageData = '';
+                try {
+                    await allImagesLoadedPromise.catch(e => {
+                        console.warn('Algumas imagens podem não ter carregado completamente (html2canvas pode não incluí-las):', e.message);
+                    });
+
+                    const canvas = await html2canvas(imageToGenerate, {
+                        scale: 2,
+                        logging: false,
+                        useCORS: true,
+                        allowTaint: false // Não permitir canvases "manchados". Se uma imagem externa não permitir CORS, a captura falhará aqui.
+                    });
+
+                    imageData = canvas.toDataURL('image/jpeg', 0.9);
+
+                    if (!imageData || imageData.length < 1000) {
+                        console.error('html2canvas gerou dados de imagem inválidos ou muito pequenos. Isso indica um problema na renderização do canvas.');
+                        messageDisplay.textContent = 'Erro grave ao gerar a imagem. Verifique o console do navegador e a URL da imagem de fundo.';
+                        messageDisplay.className = 'message error';
+                        return;
+                    }
+
+                    generatedImagePreview.src = imageData;
+                    generatedImagePreview.style.display = 'block';
+
+                } catch (html2canvasError) {
+                    console.error('Erro na geração da imagem (html2canvas):', html2canvasError);
+                    messageDisplay.textContent = `Erro crítico ao gerar a imagem: ${html2canvasError.message}. Por favor, use uma URL de imagem de fundo que permita CORS.`;
+                    messageDisplay.className = 'message error';
+                    return;
+                }
+
+                // PARTE DO ENVIO PARA O DISCORD (DIRETO DO CLIENT-SIDE)
+                // --- PODE SER BLOQUEADO PELO NAVEGADOR DEVIDO A CORS ---
+                try {
+                    const blob = await (await fetch(imageData)).blob(); // Converte base64 para Blob
+                    const file = new File([blob], 'square_news_card.jpg', { type: 'image/jpeg' });
+
+                    const formData = new FormData();
+                    formData.append('file', file);
+                    
+                    formData.append('payload_json', JSON.stringify({
+                         username: "Square Cloud News",
+                         avatar_url: "./public/apple-touch-icon.png",
+                         content: "" 
+                    }));
+
+                    const response = await fetch('/send-news', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ imageData })
+                    });
+
+                    if (response.ok) {
+                        messageDisplay.textContent = 'Notícia enviada com sucesso para o Discord!';
+                        messageDisplay.className = 'message success';
+                        
+                        newsForm.reset();
+                        imageBgUrlInput.value = 'https://picsum.photos/id/1018/800/600';
+                        newsTitleInput.value = 'Título da Notícia';
+                        newsDescriptionInput.value = 'Aqui vai a descrição detalhada da notícia. Pode ser um texto mais longo para demonstrar como o layout se ajusta e o que é o Square Cloud.';
+                        newsSourceInput.value = 'SeuSite.com';
+                        updatePreviewElements();
+
+                    } else {
+                        const error = await response.json();
+                        messageDisplay.textContent = `Erro ao enviar para o Discord: ${error.error || 'Erro desconhecido.'}`;
+                        messageDisplay.className = 'message error';
+                    }
+
+                } catch (sendError) {
+                    console.error('Erro ao tentar enviar para o Discord:', sendError);
+                    messageDisplay.textContent = `Erro ao enviar para o Discord: ${sendError.message}. Verifique o console do navegador para detalhes de CORS.`;
+                    messageDisplay.className = 'message error';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

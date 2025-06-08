@@ -1,0 +1,27 @@
+{
+  "name": "square-cloud-news",
+  "version": "1.0.0",
+  "description": "Sistema para gerar notícias da Square Cloud e enviar para o Discord.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "keywords": [
+    "square cloud",
+    "discord webhook",
+    "news generator",
+    "html2canvas"
+  ],
+  "author": "Seu Nome",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "node-fetch": "^2.6.1",
+    "form-data": "^4.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

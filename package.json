@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "nodemon --watch server.js"
   },
   "keywords": [
     "square cloud",
@@ -13,13 +13,13 @@
     "news generator",
     "html2canvas"
   ],
-  "author": "Seu Nome",
-  "license": "ISC",
+  "author": "Jeiel Miranda",
+  "license": "MIT",
   "dependencies": {
     "dotenv": "^16.4.5",
     "express": "^4.19.2",
-    "node-fetch": "^2.6.1",
-    "form-data": "^4.0.0"
+    "form-data": "^4.0.0",
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "nodemon": "^3.1.0"

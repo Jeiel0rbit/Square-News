@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerador de Notícias Square Cloud</title>
+    <title>Square News</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap');
 
@@ -151,21 +151,24 @@
         }
 
         .content-overlay h3 {
-            font-size: 1.8em;
-            margin-top: 0;
-            margin-bottom: 10px;
-            color: #333;
-            font-weight: 700;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-            line-height: 1.2;
-        }
+           font-size: 1.8em;
+        margin-top: 0;
+        margin-bottom: 10px;
+        color: #333;
+        font-weight: 700;
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        line-height: 1.2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
 
         .content-overlay p {
             font-size: 1.1em;
             line-height: 1.5;
             color: #555;
             margin-bottom: 25px;
-            flex-grow: 1;
+            flex-grow: 1; 
             display: -webkit-box;
             -webkit-line-clamp: 3;
             line-clamp: 3;
@@ -177,14 +180,12 @@
         .content-overlay .source-text {
             font-size: 0.85em;
             color: #888;
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: calc(100% - 40px);
+            width: calc(100% - 40px); 
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            margin-top: auto; 
+            text-align: center; 
         }
 
         .footer-black-area {
@@ -236,7 +237,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Gerador de Notícias Square Cloud</h1>
+        <h1>Square News</h1>
 
         <form id="newsForm">
             <div class="form-group">
@@ -246,17 +247,22 @@
 
             <div class="form-group">
                 <label for="newsTitle">Título:</label>
-                <input type="text" id="newsTitle" placeholder="Título da Notícia" required>
+                <input type="text" id="newsTitle" placeholder="Título da Notícia" required maxlength="40"> 
             </div>
 
             <div class="form-group">
                 <label for="newsDescription">Descrição:</label>
-                <textarea id="newsDescription" rows="5" placeholder="Corpo da notícia..." required></textarea>
+                <textarea id="newsDescription" rows="5" placeholder="Corpo da notícia..." required maxlength="200"></textarea> 
             </div>
 
             <div class="form-group">
                 <label for="newsSource">Fonte:</label>
-                <input type="text" id="newsSource" placeholder="Ex: SeuSite.com" required>
+                <input type="text" id="newsSource" placeholder="Ex: informoney.com.br" required maxlength="40"> 
+            </div>
+
+            <div class="form-group">
+                <label for="submissionPassword">Senha de Envio:</label>
+                <input type="password" id="submissionPassword" placeholder="Digite a senha para enviar" required>
             </div>
 
             <button type="submit" id="sendNewsButton">Gerar Imagem e Enviar para Discord</button>
@@ -298,6 +304,7 @@
             const newsTitleInput = document.getElementById('newsTitle');
             const newsDescriptionInput = document.getElementById('newsDescription');
             const newsSourceInput = document.getElementById('newsSource');
+            const submissionPasswordInput = document.getElementById('submissionPassword'); // Adicionado
 
             const imageToGenerate = document.getElementById('imageToGenerate');
 
@@ -337,8 +344,8 @@
                 previewNewsDescription.textContent = newsDescriptionInput.value;
                 previewNewsSource.textContent = newsSourceInput.value;
 
-                previewDate.textContent = `Data: ${getFormattedDateUTCMinus3()}`;
-                previewSite.textContent = `Site: https://squarecloud.app`;
+                previewDate.textContent = `Data/Hora: ${getFormattedDateUTCMinus3()}`;
+                previewSite.textContent = `https://squarecloud.app`;
 
                 generatedImagePreview.style.display = 'none';
                 messageDisplay.textContent = '';
@@ -388,10 +395,10 @@
             newsDescriptionInput.addEventListener('input', updatePreviewElements);
             newsSourceInput.addEventListener('input', updatePreviewElements);
 
-            imageBgUrlInput.value = 'https://picsum.photos/id/1018/800/600';
+            imageBgUrlInput.value = 'https://media.gettyimages.com/id/1203053244/pt/foto/an-apple-iphone-11-smartphone-with-the-discord-software-app-logo-on-screen-taken-on-january-27.jpg?s=612x612&w=0&k=20&c=gJmGHuHlQWfkgW1i8i50UM28A01GTuyGF1sCciWRmiM=';
             newsTitleInput.value = 'Título da Notícia';
-            newsDescriptionInput.value = 'Aqui vai a descrição detalhada da notícia. Pode ser um texto mais longo para demonstrar como o layout se ajusta e o que é o Square Cloud.';
-            newsSourceInput.value = 'SeuSite.com';
+            newsDescriptionInput.value = 'Aqui vai a descrição detalhada da notícia. Não tão detalhada, mas o suficiente para demonstrar como o layout se ajusta.';
+            newsSourceInput.value = '';
             updatePreviewElements();
 
             newsForm.addEventListener('submit', async (event) => {
@@ -401,8 +408,8 @@
                 messageDisplay.className = 'message';
                 generatedImagePreview.style.display = 'none';
 
-                if (!imageBgUrlInput.value || !newsTitleInput.value || !newsDescriptionInput.value || !newsSourceInput.value) {
-                    messageDisplay.textContent = 'Por favor, preencha todos os campos.';
+                if (!imageBgUrlInput.value || !newsTitleInput.value || !newsDescriptionInput.value || !newsSourceInput.value || !submissionPasswordInput.value) { // Verificação da senha adicionada
+                    messageDisplay.textContent = 'Por favor, preencha todos os campos, incluindo a senha.';
                     messageDisplay.className = 'message error';
                     return;
                 }
@@ -457,7 +464,10 @@
                     const response = await fetch('/send-news', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ imageData })
+                        body: JSON.stringify({
+                            imageData: imageData,
+                            password: submissionPasswordInput.value // Adiciona a senha ao corpo da requisição
+                        })
                     });
 
                     if (response.ok) {
@@ -469,6 +479,7 @@
                         newsTitleInput.value = 'Título da Notícia';
                         newsDescriptionInput.value = 'Aqui vai a descrição detalhada da notícia. Pode ser um texto mais longo para demonstrar como o layout se ajusta e o que é o Square Cloud.';
                         newsSourceInput.value = 'SeuSite.com';
+                        submissionPasswordInput.value = '';
                         updatePreviewElements();
 
                     } else {

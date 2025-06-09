@@ -15,11 +15,21 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.post('/send-news', async (req, res) => {
-    const { imageData } = req.body;
+    const { imageData, password } = req.body; // Recebe a senha
     const discordWebhookUrl = process.env.DISCORD_WEBHOOK_URL;
+    const submissionPassword = process.env.SUBMISSION_PASSWORD; // Obtém a senha do .env
 
     if (!discordWebhookUrl) {
         return res.status(500).json({ error: 'URL do Webhook do Discord não configurada no servidor.' });
+    }
+
+    if (!submissionPassword) {
+         console.error('SUBMISSION_PASSWORD não configurada no .env');
+         return res.status(500).json({ error: 'Senha de envio não configurada no servidor.' });
+    }
+
+    if (password !== submissionPassword) { // Verifica se a senha está correta
+        return res.status(401).json({ error: 'Senha inválida.' });
     }
 
     if (!imageData) {
@@ -32,7 +42,7 @@ app.post('/send-news', async (req, res) => {
 
         const payload = {
             username: "Square Cloud News",
-            avatar_url: "https://i.imgur.com/kPjD1eU.png"
+            avatar_url: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSMR-2UkwIptigxdoXb_JTP_aJ3aCfJt5AwtsVJlE6QixCdKZJJ7GBGPHAzr29LYH07pjI&usqp=CAU",
         };
 
         const form = new FormData();
